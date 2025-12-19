@@ -1,16 +1,26 @@
 {
-	"name": "broxy",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest"
-	},
-	"devDependencies": {
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"vitest": "~3.2.0",
-		"wrangler": "^4.55.0"
-	}
+    "name": "broxy",
+    "version": "1.0.0",
+    "description": "Distributed browser-based proxy system",
+    "private": true,
+    "scripts": {
+        "server:install": "cd server && composer install",
+        "server:start": "cd server && php start.php start",
+        "server:start:daemon": "cd server && php start.php start -d",
+        "server:stop": "cd server && php start.php stop",
+        "server:restart": "cd server && php start.php restart",
+        "server:status": "cd server && php start.php status",
+        "ext:pack": "cd extension && zip -r ../broxy-extension.zip . -x '*.git*' -x '*.DS_Store'",
+        "dev": "npm run server:start",
+        "setup": "npm run server:install"
+    },
+    "keywords": [
+        "proxy",
+        "browser",
+        "workerman",
+        "websocket"
+    ],
+    "author": "",
+    "license": "MIT"
 }
+
