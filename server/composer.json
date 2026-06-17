@@ -1,6 +1,6 @@
 {
     "name": "broxy/server",
-    "description": "Broxy distributed browser proxy system - PHP Workerman servers",
+    "description": "Broxy distributed browser URL render API - PHP Workerman servers",
     "type": "project",
     "license": "MIT",
     "autoload": {
@@ -24,4 +24,3 @@
         "status": "php start.php status"
     }
 }
-

@@ -1,8 +1,8 @@
 <?php
 
 return [
-    // Proxy server configuration
-    'proxy' => [
+    // HTTP API server configuration
+    'api' => [
         'host' => '0.0.0.0',
         'port' => 8080,
         'workers' => 4, // cpu_cores * 2
@@ -36,4 +36,3 @@ return [
         'request_ttl' => 60, // seconds - request timeout
     ],
 ];
-

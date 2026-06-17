@@ -67,9 +67,9 @@ class ControlServer
             $this->config['channel']['port']
         );
 
-        // Subscribe to proxy requests
-        ChannelClient::on('proxy_request', function ($data) {
-            $this->handleProxyRequest($data);
+        // Subscribe to API render requests.
+        ChannelClient::on('api_request', function ($data) {
+            $this->handleApiRequest($data);
         });
 
         // Setup heartbeat checker timer
@@ -165,8 +165,8 @@ class ControlServer
             $bot->markAvailable();
         }
 
-        // Publish response back to proxy server via Channel
-        ChannelClient::publish('proxy_response', [
+        // Publish response back to API server via Channel.
+        ChannelClient::publish('api_response', [
             'request_id' => $requestId,
             'status' => $message['status'] ?? 500,
             'headers' => $message['headers'] ?? [],
@@ -178,16 +178,16 @@ class ControlServer
         $this->processQueue();
     }
 
-    private function handleProxyRequest(array $data): void
+    private function handleApiRequest(array $data): void
     {
-        // This is called when proxy server sends a request via Channel
+        // This is called when the API server sends a render request via Channel.
         $request = new PendingRequest(
             $data['method'],
             $data['url'],
             $data['headers'],
             $data['body'] ?? null,
             null, // No direct connection in this context
-            $data['request_id'] // Use the request ID from proxy server
+            $data['request_id'] // Use the request ID from the API server.
         );
 
         // Store mapping for response routing
@@ -262,7 +262,7 @@ class ControlServer
         $expired = $this->requestQueue->cleanupExpired();
 
         foreach ($expired as $request) {
-            ChannelClient::publish('proxy_response', [
+            ChannelClient::publish('api_response', [
                 'request_id' => $request->getId(),
                 'status' => 504,
                 'headers' => [],
@@ -285,4 +285,3 @@ class ControlServer
         ];
     }
 }
-

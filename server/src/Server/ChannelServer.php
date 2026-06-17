@@ -5,7 +5,7 @@ namespace Broxy\Server;
 use Channel\Server;
 
 /**
- * Channel Server for Inter-Process Communication between Proxy and Control servers
+ * Channel Server for Inter-Process Communication between API and Control servers
  */
 class ChannelServer
 {
@@ -26,4 +26,3 @@ class ChannelServer
         return $this->server;
     }
 }
-

@@ -6,14 +6,14 @@
  * Starts all Workerman servers:
  * - Channel Server (IPC)
  * - Control Server (WebSocket for bots)
- * - Proxy Server (HTTP proxy)
+ * - API Server (HTTP URL render API)
  */
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Broxy\Server\ChannelServer;
 use Broxy\Server\ControlServer;
-use Broxy\Server\ProxyServer;
+use Broxy\Server\ApiServer;
 use Workerman\Worker;
 
 // Load configuration
@@ -23,11 +23,11 @@ $config = require __DIR__ . '/config/config.php';
 echo <<<BANNER
 ╔═══════════════════════════════════════════════════════════════╗
 ║                         BROXY SERVER                          ║
-║           Distributed Browser-Based Proxy System              ║
+║              Distributed Browser URL Render API               ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Channel Server (IPC):     {$config['channel']['host']}:{$config['channel']['port']}                       ║
 ║  Control Server (WS):      {$config['control']['host']}:{$config['control']['port']}                        ║
-║  Proxy Server (HTTP):      {$config['proxy']['host']}:{$config['proxy']['port']}                        ║
+║  API Server (HTTP):        {$config['api']['host']}:{$config['api']['port']}                        ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 BANNER;
@@ -38,9 +38,8 @@ $channelServer = new ChannelServer($config);
 // Start Control Server (manages bot pool)
 $controlServer = new ControlServer($config);
 
-// Start Proxy Server (accepts HTTP requests)
-$proxyServer = new ProxyServer($config);
+// Start API Server (accepts URL render requests)
+$apiServer = new ApiServer($config);
 
 // Run all workers
 Worker::runAll();
-

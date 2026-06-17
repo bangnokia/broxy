@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Broxy Bot",
     "version": "1.0.0",
-    "description": "Browser bot for Broxy distributed proxy system",
+    "description": "Browser bot for Broxy distributed URL render API",
     "permissions": [
         "storage",
         "alarms",
@@ -30,4 +30,3 @@
         "128": "icons/icon128.png"
     }
 }
-

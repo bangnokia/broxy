@@ -1,13 +1,13 @@
-# Broxy - Distributed Browser-Based Proxy System
+# Broxy - Distributed Browser-Based URL Render API
 
-Broxy routes HTTP requests through real browser instances to make traffic appear organic and bypass anti-bot measures.
+Broxy accepts URL render requests over HTTP and routes them through real browser instances to make traffic appear organic and bypass anti-bot measures.
 
 ## Architecture
 
 ```
 ┌─────────────┐     HTTP      ┌──────────────┐    Channel    ┌────────────────┐
-│   Client    │───────────────▶   Proxy      │◀─────────────▶│    Control     │
-│  (curl/app) │    :8080      │   Server     │    (IPC)      │    Server      │
+│   Client    │───────────────▶    API       │◀─────────────▶│    Control     │
+│  (curl/app) │    :8080/api  │   Server     │    (IPC)      │    Server      │
 └─────────────┘               └──────────────┘               └───────┬────────┘
                                                                      │
                                                               WebSocket :9999
@@ -57,17 +57,21 @@ php start.php start
 3. Click "Load unpacked" and select the `extension/` folder
 4. Click the extension icon and configure:
    - Server URL: `ws://localhost:9999`
-   - API Key: `your-bot-api-key-change-me`
 5. Click "Save Configuration" then "Connect"
 
-### 3. Use the Proxy
+### 3. Use the API
 
 ```bash
-# Test with curl
-curl -x http://localhost:8080 https://httpbin.org/ip
+# GET
+curl "http://localhost:8080/api?url=https://example.com"
 
-# Or configure your application to use HTTP proxy at localhost:8080
+# POST JSON
+curl -X POST http://localhost:8080/api \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://example.com"}'
 ```
+
+The API accepts both `http://` and `https://` URLs. The connected browser extension opens the URL in a browser tab and returns the captured page content.
 
 ## Configuration
 
@@ -75,25 +79,16 @@ curl -x http://localhost:8080 https://httpbin.org/ip
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `proxy.port` | 8080 | HTTP proxy port |
+| `api.port` | 8080 | HTTP API port |
 | `control.port` | 9999 | WebSocket control server port |
 | `channel.port` | 2206 | Internal IPC channel port |
 | `bot.heartbeat_interval` | 25 | Heartbeat interval in seconds |
-| `auth.bot_api_key` | - | API key for bot authentication |
-| `auth.proxy_api_key` | - | API key for proxy authentication |
-
-### Environment Variables
-
-```bash
-export BROXY_BOT_API_KEY="your-secure-bot-key"
-export BROXY_PROXY_API_KEY="your-secure-proxy-key"
-```
 
 ## Scaling
 
 ```php
 // In config/config.php, adjust worker counts:
-'proxy' => [
+'api' => [
     'workers' => 8,  // cpu_cores * 2
 ],
 'control' => [
@@ -101,12 +96,23 @@ export BROXY_PROXY_API_KEY="your-secure-proxy-key"
 ],
 ```
 
-## Proxy Authentication
+## API Response
 
-Use HTTP Basic auth with the proxy API key as the password:
+Successful API requests return JSON:
 
-```bash
-curl -x http://user:your-proxy-api-key@localhost:8080 https://example.com
+```json
+{
+  "request_id": "req_...",
+  "ok": true,
+  "status": 200,
+  "headers": {
+    "content-type": "text/html; charset=utf-8",
+    "x-broxy-title": "Example Domain",
+    "x-broxy-final-url": "https://example.com/"
+  },
+  "body": "<html>...</html>",
+  "error": null
+}
 ```
 
 ## License
